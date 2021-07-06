@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById("entered").focus();
+
     document.getElementById('unblock').onsubmit=function(){
         var link = "";
         var value = document.getElementById('entered').value;
@@ -7,7 +9,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
         var load = false;
 
-        if(parser.hostname == "www.youtube.com"){
+        if(parser.hostname == "twitter.com"){
+            var split = parser.pathname.split("/");
+
+            if(split.length > 1 && (split[2] == "status")){
+                load = true;
+                link = parser.href;
+            }
+        }
+        else if(parser.hostname == "www.youtube.com"){
             var split = parser.pathname.split("/");
 
             if(split.length > 1 && (split[1] == "watch")){
@@ -28,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if(load){
-            chrome.extension.getBackgroundPage().allowed = true;
+            chrome.extension.getBackgroundPage().skipCheck = true;
             chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
                 chrome.tabs.update(tabs[0].id, { url: link}); 
             });
